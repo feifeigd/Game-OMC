@@ -109,7 +109,7 @@
             </div>
           </div>
 
-          <footer
+          <!-- <footer
             class="login-page-footer login-page-footer--pinned shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"
             :class="panelAlign === 'center' && 'login-page-footer--floating-layout'"
           >
@@ -156,7 +156,7 @@
                 {{ configStore.configData.sys_keep_record.config_value }}
               </span>
             </div>
-          </footer>
+          </footer> -->
         </div>
       </div>
     </div>
@@ -552,7 +552,7 @@ onMounted(async () => {
     return;
   }
   getCaptcha();
-  voteTimer = setTimeout(showVoteNotification, 500);
+  // voteTimer = setTimeout(showVoteNotification, 500);
 });
 
 onActivated(() => {

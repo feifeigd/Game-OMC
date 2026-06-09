@@ -52,12 +52,12 @@ const oauthItems = computed(() => [
     icon: "mdi:github",
     iconClass: "size-[22px] text-g-800 dark:text-white/85",
   },
-  {
-    provider: "gitee" as const,
-    tip: t("login.oauthTooltip.gitee"),
-    icon: "simple-icons:gitee",
-    iconClass: "size-[22px] text-[#c71d23]",
-  },
+  // {
+  //   provider: "gitee" as const,
+  //   tip: t("login.oauthTooltip.gitee"),
+  //   icon: "simple-icons:gitee",
+  //   iconClass: "size-[22px] text-[#c71d23]",
+  // },
 ]);
 </script>
 
