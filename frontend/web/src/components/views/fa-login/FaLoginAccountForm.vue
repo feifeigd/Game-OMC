@@ -10,7 +10,7 @@
       :validate-on-rule-change="false"
       @keyup.enter="$emit('submit')"
     >
-      <ElFormItem>
+      <ElFormItem v-if="!isProd">
         <ElSelect
           :model-value="demoAccountKey"
           class="w-full"
@@ -208,7 +208,8 @@ defineEmits<{
 const formRef = ref();
 const dragVerifyRef = ref<{ reset?: () => void } | null>(null);
 const isCapsLock = ref(false);
-
+const isProd = import.meta.env.PROD;
+console.log('isProd=', isProd);
 function checkCapsLock(event: KeyboardEvent) {
   if (event instanceof KeyboardEvent) {
     isCapsLock.value = event.getModifierState("CapsLock");

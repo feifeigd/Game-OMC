@@ -2,7 +2,7 @@
 <template>
   <div class="login-page-root flex h-screen w-full flex-col overflow-hidden">
     <FaLoginCenterBackdrop v-if="panelAlign === 'center'" viewport-fixed />
-    <AuthTopBar v-model:panel-align="panelAlign" />
+    <FaAuthTopBar v-model:panel-align="panelAlign" />
 
     <div
       class="login-auth-split relative z-1 flex min-h-0 flex-1 overflow-hidden"

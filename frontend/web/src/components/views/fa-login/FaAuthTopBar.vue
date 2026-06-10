@@ -117,7 +117,12 @@ import { LanguageEnum } from "@/enums/appEnum";
 import AppConfig from "@/config";
 import { LoginPanelAlign } from "@/components/views/fa-login/useLoginPanelAlign";
 
-defineOptions({ name: "AuthTopBar" });
+// defineOptions({ name: "FaAuthTopBar" }) 的实际作用主要是给组件命名，方便：
+
+// Vue DevTools 里显示组件名
+// KeepAlive 按组件名匹配
+// 某些递归组件或调试场景更清晰
+defineOptions({ name: "FaAuthTopBar" });
 
 const DEFAULT_APP_VERSION = "3.0.0";
 
