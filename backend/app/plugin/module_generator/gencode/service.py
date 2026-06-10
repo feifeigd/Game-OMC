@@ -761,16 +761,12 @@ class GenTableService:
             gen_table_schema.business_name or "",
         )
 
-        # 检查同一模块目录下是否已有同名功能菜单（避免与其它模块下的同名功能冲突）
+        # 同一模块目录下功能菜单改为覆盖更新（upsert）而非报错。
         existing_func_menu = await menu_crud.get(
             name=gen_table_schema.function_name,
             type=_MENU_TYPE_MENU,
             parent_id=dir_menu_id,
         )
-        if existing_func_menu:
-            raise CustomException(
-                msg=f"该模块目录下功能菜单「{gen_table_schema.function_name}」已存在，不能重复创建"
-            )
         route_seg = cls._menu_route_first_segment(
             gen_table_schema.parent_menu_id,
             gen_table_schema.package_name or "",
@@ -784,29 +780,36 @@ class GenTableService:
         # 与 Jinja2TemplateUtil.get_file_name 统一：module_xxx/{module_name}
         _route_path = f"/{route_seg}/{_mn}"
         _component_path = f"{_pn}/{_mn}/index"
-        # 创建功能菜单（类型=2：菜单）
-        parent_menu = await menu_crud.create(
-            MenuCreateSchema(
-                name=gen_table_schema.function_name,
-                type=_MENU_TYPE_MENU,
-                order=9999,
-                permission=f"{permission_prefix}:query",
-                icon="menu",
-                route_name=CamelCaseUtil.snake_to_camel(_mn),
-                route_path=_route_path,
-                component_path=_component_path,
-                redirect=None,
-                hidden=False,
-                keep_alive=True,
-                always_show=False,
-                title=gen_table_schema.function_name,
-                params=None,
-                affix=False,
-                parent_id=dir_menu_id,  # 使用目录菜单ID或用户指定的parent_menu_id作为父ID
-                status="0",
-                description=f"{gen_table_schema.function_name}功能菜单",
+        func_menu_payload = {
+            "name": gen_table_schema.function_name,
+            "type": _MENU_TYPE_MENU,
+            "order": 9999,
+            "permission": f"{permission_prefix}:query",
+            "icon": "menu",
+            "route_name": CamelCaseUtil.snake_to_camel(_mn),
+            "route_path": _route_path,
+            "component_path": _component_path,
+            "redirect": None,
+            "hidden": False,
+            "keep_alive": True,
+            "always_show": False,
+            "title": gen_table_schema.function_name,
+            "params": None,
+            "affix": False,
+            "parent_id": dir_menu_id,
+            "status": "0",
+            "description": f"{gen_table_schema.function_name}功能菜单",
+        }
+
+        # 功能菜单（类型=2）存在则更新，不存在则创建。
+        if existing_func_menu:
+            parent_menu = await menu_crud.update(existing_func_menu.id, func_menu_payload)
+            log.info(
+                f"代码生成：覆盖更新功能菜单 id={existing_func_menu.id} name={gen_table_schema.function_name!r}"
             )
-        )
+        else:
+            parent_menu = await menu_crud.create(MenuCreateSchema(**func_menu_payload))
+            log.info(f"代码生成：新建功能菜单 id={parent_menu.id} name={gen_table_schema.function_name!r}")
         # 创建按钮权限（类型=3：按钮/权限）
         buttons = [
             {
@@ -856,31 +859,38 @@ class GenTableService:
             },
         ]
         for button in buttons:
-            # 检查按钮权限是否已存在
-            await menu_crud.create(
-                MenuCreateSchema(
-                    name=button["name"],
-                    type=3,
-                    order=button["order"],
-                    permission=button["permission"],
-                    icon=None,
-                    route_name=None,
-                    route_path=None,
-                    component_path=None,
-                    redirect=None,
-                    hidden=False,
-                    keep_alive=True,
-                    always_show=False,
-                    title=button["name"],
-                    params=None,
-                    affix=False,
-                    parent_id=parent_menu.id,
-                    status="0",
-                    description=f"{gen_table_schema.function_name}功能按钮",
-                )
+            button_payload = {
+                "name": button["name"],
+                "type": 3,
+                "order": button["order"],
+                "permission": button["permission"],
+                "icon": None,
+                "route_name": None,
+                "route_path": None,
+                "component_path": None,
+                "redirect": None,
+                "hidden": False,
+                "keep_alive": True,
+                "always_show": False,
+                "title": button["name"],
+                "params": None,
+                "affix": False,
+                "parent_id": parent_menu.id,
+                "status": "0",
+                "description": f"{gen_table_schema.function_name}功能按钮",
+            }
+            existing_button = await menu_crud.get(
+                type=3,
+                parent_id=parent_menu.id,
+                permission=button["permission"],
             )
-            log.info(f"成功创建按钮权限: {button['name']}")
-        log.info(f"成功创建{gen_table_schema.function_name}菜单及按钮权限")
+            if existing_button:
+                await menu_crud.update(existing_button.id, button_payload)
+                log.info(f"代码生成：覆盖更新按钮权限 id={existing_button.id} name={button['name']}")
+            else:
+                await menu_crud.create(MenuCreateSchema(**button_payload))
+                log.info(f"代码生成：新建按钮权限 name={button['name']}")
+        log.info(f"成功同步{gen_table_schema.function_name}菜单及按钮权限")
 
         # 2. 菜单创建成功后，再生成页面代码（主表 + 可选子表）
         async def _write_templates(

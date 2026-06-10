@@ -151,7 +151,7 @@
         <ElInput
           v-model="visualPreviewSql"
           type="textarea"
-          :rows="6"
+          :rows="14"
           readonly
           class="font-mono text-xs visual-sql-preview"
           placeholder="填写表名后会自动生成"
