@@ -1306,3 +1306,9 @@ async function loadTableDetail(id: number | string) {
   }
 }
 </script>
+
+<style>
+.gencode-write-confirm-box.el-message-box {
+  --el-messagebox-width: min(52vw, 980px);
+}
+</style>

@@ -46,14 +46,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
             modules=settings.EVENT_LIST, desc="全局事件", app=app, status=True
         )
         log.info("✅ 全局事件模块加载完成")
-        await ParamsService().init_config_service(redis=app.state.redis)
+        redis = app.state.redis
+        await ParamsService().init_config_service(redis=redis)
         log.info("✅ Redis系统配置初始化完成")
-        await DictDataService().init_dict_service(redis=app.state.redis)
+        await DictDataService().init_dict_service(redis=redis)
         log.info("✅ Redis数据字典初始化完成")
-        await SchedulerUtil.init_scheduler(redis=app.state.redis)
+        await SchedulerUtil.init_scheduler(redis=redis)
         log.info("✅ 定时任务调度器初始化完成")
+
         await FastAPILimiter.init(
-            redis=app.state.redis,
+            redis=redis,
             prefix=settings.REQUEST_LIMITER_REDIS_PREFIX,
             http_callback=http_limit_callback,
             ws_callback=ws_limit_callback,
@@ -132,6 +134,7 @@ def register_routers(app: FastAPI) -> None:
     返回:
     - None
     """
+    # app.api.v1 里面的路由必须手动注册
     from app.api.v1.module_application import application_router
     from app.api.v1.module_common import common_router
     from app.api.v1.module_monitor import monitor_router

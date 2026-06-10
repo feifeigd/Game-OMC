@@ -249,7 +249,7 @@ class Settings(BaseSettings):
         - list[str | None]: 事件模块路径或 None。
         """
         EVENTS: list[str | None] = [
-            "app.core.database.redis_connect" if self.REDIS_ENABLE else None,
+            "app.core.database.redis_connect" if self.REDIS_ENABLE else None, # lifespan 连接 Redis 
         ]
         return EVENTS
 

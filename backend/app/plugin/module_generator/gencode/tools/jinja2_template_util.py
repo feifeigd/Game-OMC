@@ -338,8 +338,8 @@ class Jinja2TemplateUtil:
 
         # 目录固定为：module_xxx/{module_name}
         backend_base = f"{cls.BACKEND_PROJECT_PATH}/app/plugin/{package_name}"
-        frontend_view_base = f"{cls.FRONTEND_PROJECT_PATH}/src/views/{package_name}"
-        frontend_api_base = f"{cls.FRONTEND_PROJECT_PATH}/src/api/{package_name}"
+        frontend_view_base = f"{cls.FRONTEND_PROJECT_PATH}/web/src/views/{package_name}"
+        frontend_api_base = f"{cls.FRONTEND_PROJECT_PATH}/web/src/api/{package_name}"
 
         backend_dir = f"{backend_base}/{module_name}"
         view_dir = f"{frontend_view_base}/{module_name}"

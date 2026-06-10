@@ -219,7 +219,7 @@
         />
       </ElCol>
 
-      <ElCol :xs="24" :sm="4" :md="6" class="mb-5">
+      <!-- <ElCol :xs="24" :sm="4" :md="6" class="mb-5">
         <FaCardBanner
           :image="bannerIcon4"
           title="版本更新提醒"
@@ -234,8 +234,8 @@
           @click="handleBannerDemoConfirm"
           @cancel="handleBannerDemoCancel"
         />
-      </ElCol>
-      <ElCol :xs="24" :sm="12" :md="18" class="mb-5">
+      </ElCol> -->
+      <ElCol :xs="24" :sm="12" :md="24" class="mb-5">
         <AboutProject />
       </ElCol>
     </ElRow>

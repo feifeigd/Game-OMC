@@ -44,6 +44,7 @@ async def websocket_chat_controller(
         try:
             # 获取数据库和redis连接
             async with async_db_session() as db:
+                # 在 app.core.database.redis_connect 挂载
                 redis = websocket.app.state.redis
                 auth = await _verify_token(token, db, redis)
                 user_info = f"用户: {auth.user.username}" if auth and auth.user else "未认证用户"

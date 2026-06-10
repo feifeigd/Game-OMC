@@ -305,7 +305,9 @@ export class RouteTransformer {
       return absPath;
     }
     if (depth === 0) {
-      return firstSeg;
+      // return firstSeg;
+      // shell 子路由模式下，一级菜单需要保留完整路径，避免 `/a/b` 被截断为 `/a` 导致 404。
+      return absPath.replace(/^\/+/, "");
     }
     if (!parentAbsPath || !absPath) return absPath;
     const p = parentAbsPath.replace(/\/$/, "");

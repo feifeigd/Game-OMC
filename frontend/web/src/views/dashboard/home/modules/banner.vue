@@ -66,7 +66,8 @@ const currentUser = {
 
 const bannerTitle = `欢迎回来 ～ ${currentUser.name}（${currentUser.username}） ${timefix} ${welcome}`;
 
-const bannerSubtitle = `基于 FastAPI + Vue3 + TypeScript 构建的企业级中后台解决方案，支持多端开发。`;
+// const bannerSubtitle = `基于 FastAPI + Vue3 + TypeScript 构建的企业级中后台解决方案，支持多端开发。`;
+const bannerSubtitle = '';
 </script>
 
 <style scoped lang="scss"></style>

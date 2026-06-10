@@ -277,18 +277,20 @@ const backendModuleDirPreview = computed(() => {
   return `backend/app/plugin/${pkg}/${mod}/`;
 });
 
+const frontend_src = "frontend/web/src";
+
 const frontendViewDirPreview = computed(() => {
   const pkg = effectivePackageName.value;
   const mod = (info.value.module_name || "").trim();
-  if (!pkg || !mod) return "frontend/src/views/<module_xxx>/<module>/";
-  return `frontend/src/views/${pkg}/${mod}/`;
+  if (!pkg || !mod) return `${frontend_src}/views/<module_xxx>/<module>/`;
+  return `${frontend_src}/views/${pkg}/${mod}/`;
 });
 
 const frontendApiFilePreview = computed(() => {
   const pkg = effectivePackageName.value;
   const mod = (info.value.module_name || "").trim();
-  if (!pkg || !mod) return "frontend/src/api/<module_xxx>/<module>.ts";
-  return `frontend/src/api/${pkg}/${mod}.ts`;
+  if (!pkg || !mod) return `${frontend_src}/api/<module_xxx>/<module>.ts`;
+  return `${frontend_src}/api/${pkg}/${mod}.ts`;
 });
 
 const emit = defineEmits<{
