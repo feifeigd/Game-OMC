@@ -15,6 +15,7 @@ from fastapi_limiter.depends import RateLimiter, WebSocketRateLimiter
 
 from app.config.setting import settings
 from app.core.docs import get_custom_ui_html
+from app.core.discover import get_dynamic_events
 from app.core.exceptions import handle_exception
 from app.core.http_limit import http_limit_callback, ws_limit_callback
 from app.core.logger import log
@@ -42,10 +43,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
     try:
         await InitializeData().init_db()
         log.info(f"✅ {settings.DATABASE_TYPE}数据库初始化完成")
+        dynamic_events = get_dynamic_events()
+        all_events = [*settings.EVENT_LIST, *dynamic_events]
         await import_modules_async(
-            modules=settings.EVENT_LIST, desc="全局事件", app=app, status=True
+            modules=all_events, desc="全局事件", app=app, status=True
         )
-        log.info("✅ 全局事件模块加载完成")
+        log.info(f"✅ 全局事件模块加载完成（静态 {len(settings.EVENT_LIST)}，插件 {len(dynamic_events)}）")
         redis = app.state.redis
         await ParamsService().init_config_service(redis=redis)
         log.info("✅ Redis系统配置初始化完成")
@@ -86,7 +89,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[Any, Any]:
         log.info("✅ 定时任务调度器已关闭")
         await FastAPILimiter.close()
         log.info("✅ 请求限制器已关闭")
-        await import_modules_async(modules=settings.EVENT_LIST, desc="全局事件", app=app, status=False)
+        dynamic_events = get_dynamic_events()
+        all_events = [*settings.EVENT_LIST, *dynamic_events]
+        await import_modules_async(modules=all_events, desc="全局事件", app=app, status=False)
         log.info("✅ 全局事件模块卸载完成")
         console_close()
 

@@ -21,6 +21,7 @@
 
 # 标准库导入
 import importlib
+import inspect
 from pathlib import Path
 
 # 第三方库导入
@@ -168,4 +169,58 @@ def get_dynamic_router() -> APIRouter:
 
 
 # 重新导出函数供外部使用
-__all__ = ["get_dynamic_router"]
+def get_dynamic_events() -> list[str]:
+    """
+    发现并返回插件事件函数路径列表。
+
+    规则：扫描 ``app/plugin/module_*/event.py``，
+    优先使用 ``__all__`` 指定事件函数；未声明 ``__all__`` 时，默认收集模块内所有顶层异步函数。
+
+    返回:
+    - list[str]: 形如 ``app.plugin.module_xxx.event.func_name`` 的可导入路径列表。
+    """
+    events: list[str] = []
+    seen: set[str] = set()
+
+    try:
+        base_package = importlib.import_module("app.plugin")
+        base_dir = Path(next(iter(base_package.__path__)))
+        event_files = sorted(base_dir.glob("module_*/event.py"))
+
+        for file in event_files:
+            rel_path = file.relative_to(base_dir)
+            module_path = f"app.plugin.{'.'.join(rel_path.parts[:-1])}.event"
+            try:
+                module_obj = importlib.import_module(module_path)
+
+                explicit = getattr(module_obj, "__all__", None)
+                if isinstance(explicit, (list, tuple)) and explicit:
+                    candidate_names = [n for n in explicit if isinstance(n, str)]
+                else:
+                    candidate_names = [
+                        name
+                        for name, value in vars(module_obj).items()
+                        if inspect.iscoroutinefunction(value) and not name.startswith("_")
+                    ]
+
+                for name in candidate_names:
+                    fn = getattr(module_obj, name, None)
+                    if not inspect.iscoroutinefunction(fn):
+                        continue
+                    full_path = f"{module_path}.{name}"
+                    if full_path in seen:
+                        continue
+                    seen.add(full_path)
+                    events.append(full_path)
+
+            except Exception as e:
+                log.exception(f"❌ 插件事件发现失败: {module_path}, 错误: {e!s}")
+
+    except Exception as e:
+        log.exception(f"❌ 插件事件扫描失败: {e!s}")
+
+    return events
+
+
+# 重新导出函数供外部使用
+__all__ = ["get_dynamic_router", "get_dynamic_events"]
