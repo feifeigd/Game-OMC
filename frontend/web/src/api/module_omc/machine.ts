@@ -103,6 +103,7 @@ export interface OmcMachinePageQuery extends PageQuery {
   is_deleted?: number;
   deleted_time?: string;
   deleted_id?: number;
+  private_ip?: string;
   created_time?: string[];
   updated_time?: string[];
   created_id?: number;
@@ -117,6 +118,7 @@ export interface OmcMachineTable extends BaseType {
   is_deleted?: number;
   deleted_time?: string;
   deleted_id?: number;
+  private_ip?: string;
   created_by?: CommonType;
   updated_by?: CommonType;
   deleted_by?: CommonType;
@@ -128,4 +130,5 @@ export interface OmcMachineForm extends BaseFormType {
   is_deleted?: number;
   deleted_time?: string;
   deleted_id?: number;
+  private_ip?: string;
 }

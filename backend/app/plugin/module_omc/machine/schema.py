@@ -2,8 +2,8 @@
 
 from pydantic import BaseModel, ConfigDict, Field
 from fastapi import Query
-from datetime import datetime
 from app.core.validator import DateTimeStr
+from datetime import datetime
 from app.common.enums import QueueEnum
 from app.core.base_schema import BaseSchema, UserBySchema
 
@@ -12,8 +12,9 @@ class OmcMachineCreateSchema(BaseModel):
     omc-机器列表新增模型
     """
     name: str = Field(default=..., description='名称')
-    status: str = Field(default="0", description='是否启用(0:启用 1:禁用)')
+    status: str = Field(default="0", description='状态(0:正常 1:禁用)')
     description: str | None = Field(default=None, max_length=255, description='备注/描述')
+    private_ip: str = Field(default=..., description='内网ip')
 
 
 class OmcMachineUpdateSchema(OmcMachineCreateSchema):
@@ -36,7 +37,8 @@ class OmcMachineQueryParam:
     def __init__(
         self,
         name: str | None = Query(None, description="名称"),
-        status: str | None = Query(None, description="是否启用(0:启用 1:禁用)"),
+        status: str | None = Query(None, description="状态(0:正常 1:禁用)"),
+        private_ip: str | None = Query(None, description="内网ip"),
         created_id: int | None = Query(None, description="创建人ID"),
         updated_id: int | None = Query(None, description="更新人ID"),
         is_deleted: int | None = Query(None, description="是否已删除(0:未删除 1:已删除)"),
@@ -64,6 +66,8 @@ class OmcMachineQueryParam:
         # 精确查询字段
         if deleted_id is not None:
             self.deleted_id = (QueueEnum.eq.value, deleted_id)
+        # 模糊查询字段
+        self.private_ip = (QueueEnum.like.value, private_ip)
         # 时间范围查询
         if created_time and len(created_time) == 2:
             self.created_time = (QueueEnum.between.value, (created_time[0], created_time[1]))

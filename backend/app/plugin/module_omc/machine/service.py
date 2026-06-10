@@ -171,7 +171,7 @@ class OmcMachineService:
             'id': '主键ID',
             'uuid': 'UUID全局唯一标识',
             'name': '名称',
-            'status': '是否启用(0:启用 1:禁用)',
+            'status': '状态(0:正常 1:禁用)',
             'description': '备注/描述',
             'created_time': '创建时间',
             'updated_time': '更新时间',
@@ -180,6 +180,7 @@ class OmcMachineService:
             'is_deleted': '是否已删除(0:未删除 1:已删除)',
             'deleted_time': '删除时间',
             'deleted_id': '删除人ID',
+            'private_ip': '内网ip',
         }
         # 复制数据并转换状态
         data = obj_list.copy()
@@ -212,7 +213,7 @@ class OmcMachineService:
             '主键ID': 'id',
             'UUID全局唯一标识': 'uuid',
             '名称': 'name',
-            '是否启用(0:启用 1:禁用)': 'status',
+            '状态(0:正常 1:禁用)': 'status',
             '备注/描述': 'description',
             '创建时间': 'created_time',
             '更新时间': 'updated_time',
@@ -221,6 +222,7 @@ class OmcMachineService:
             '是否已删除(0:未删除 1:已删除)': 'is_deleted',
             '删除时间': 'deleted_time',
             '删除人ID': 'deleted_id',
+            '内网ip': 'private_ip',
         }
 
         try:
@@ -262,6 +264,7 @@ class OmcMachineService:
                         "is_deleted": row['is_deleted'],
                         "deleted_time": row['deleted_time'],
                         "deleted_id": row['deleted_id'],
+                        "private_ip": row['private_ip'],
                     }
                     # 使用CreateSchema做校验后入库
                     create_schema = OmcMachineCreateSchema.model_validate(data)
@@ -295,7 +298,7 @@ class OmcMachineService:
             '主键ID',
             'UUID全局唯一标识',
             '名称',
-            '是否启用(0:启用 1:禁用)',
+            '状态(0:正常 1:禁用)',
             '备注/描述',
             '创建时间',
             '更新时间',
@@ -304,6 +307,7 @@ class OmcMachineService:
             '是否已删除(0:未删除 1:已删除)',
             '删除时间',
             '删除人ID',
+            '内网ip',
         ]
         selector_header_list = []
         option_list = []

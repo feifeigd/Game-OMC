@@ -102,6 +102,9 @@
             <ElDescriptionsItem label="删除人ID" :span="2">
               {{ detailFormData.deleted_id }}
             </ElDescriptionsItem>
+            <ElDescriptionsItem label="内网ip" :span="2">
+              {{ detailFormData.private_ip }}
+            </ElDescriptionsItem>
           </ElDescriptions>
         </ElScrollbar>
       </template>
@@ -149,6 +152,9 @@
                 v-model="formData.deleted_id"
                 placeholder="请输入删除人ID"
               />
+            </ElFormItem>
+            <ElFormItem label="内网ip" prop="private_ip" :required="true">
+              <ElInput v-model="formData.private_ip" placeholder="请输入内网ip" />
             </ElFormItem>
           </ElForm>
         </ElScrollbar>
@@ -216,6 +222,7 @@ type OmcMachineSearchFormParams = {
   is_deleted?: string;
   deleted_time?: string;
   deleted_id?: string;
+  private_ip?: string;
 } & AuditSearchFormParams;
 
 function normalizeOmcMachineQuery(params: Record<string, unknown>): OmcMachinePageQuery {
@@ -231,6 +238,7 @@ const searchForm = ref<OmcMachineSearchFormParams>({
   is_deleted: undefined,
   deleted_time: undefined,
   deleted_id: undefined,
+  private_ip: undefined,
   created_id: undefined,
   updated_id: undefined,
   created_time: [],
@@ -294,6 +302,14 @@ const businessSearchItems = computed(() => [
     key: "deleted_id",
     type: "input",
     placeholder: "请输入删除人ID",
+    clearable: true,
+    span: 6,
+  },
+  {
+    label: "内网ip",
+    key: "private_ip",
+    type: "input",
+    placeholder: "请输入内网ip",
     clearable: true,
     span: 6,
   },
@@ -368,6 +384,7 @@ const {
       { prop: "is_deleted", label: "是否已删除(0:未删除 1:已删除)", minWidth: 120, showOverflowTooltip: true },
       { prop: "deleted_time", label: "删除时间", minWidth: 120, showOverflowTooltip: true },
       { prop: "deleted_id", label: "删除人ID", minWidth: 120, showOverflowTooltip: true },
+      { prop: "private_ip", label: "内网ip", minWidth: 120, showOverflowTooltip: true },
       {
         prop: "operation",
         label: "操作",
@@ -437,15 +454,17 @@ const formData = ref<OmcMachineForm>({
   is_deleted: undefined,
   deleted_time: undefined,
   deleted_id: undefined,
+  private_ip: undefined,
 });
 
 const rules = reactive({
   name: [{ required: false, message: "请填写名称", trigger: "blur" }],
-  status: [{ required: true, message: "请填写是否启用(0:启用 1:禁用)", trigger: "blur" }],
+  status: [{ required: true, message: "请填写状态(0:正常 1:禁用)", trigger: "blur" }],
   description: [{ required: false, message: "请填写备注/描述", trigger: "blur" }],
   is_deleted: [{ required: true, message: "请填写是否已删除(0:未删除 1:已删除)", trigger: "blur" }],
   deleted_time: [{ required: false, message: "请填写删除时间", trigger: "blur" }],
   deleted_id: [{ required: false, message: "请填写删除人ID", trigger: "blur" }],
+  private_ip: [{ required: true, message: "请填写内网ip", trigger: "blur" }],
 });
 
 const dataFormRef = ref();
@@ -459,6 +478,7 @@ const initialFormData: OmcMachineForm = {
   is_deleted: undefined,
   deleted_time: undefined,
   deleted_id: undefined,
+  private_ip: undefined,
 };
 
 const handleSearch = async (params: OmcMachineSearchFormParams) => {
@@ -469,6 +489,7 @@ const handleSearch = async (params: OmcMachineSearchFormParams) => {
     is_deleted: params.is_deleted,
     deleted_time: params.deleted_time,
     deleted_id: params.deleted_id,
+    private_ip: params.private_ip,
     created_id: params.created_id ?? undefined,
     updated_id: params.updated_id ?? undefined,
     created_time:
@@ -490,6 +511,7 @@ const onResetSearch = async () => {
     is_deleted: undefined,
     deleted_time: undefined,
     deleted_id: undefined,
+    private_ip: undefined,
     created_id: undefined,
     updated_id: undefined,
     created_time: [],
